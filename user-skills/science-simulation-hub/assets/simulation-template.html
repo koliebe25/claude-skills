@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<!--
+  과학 시뮬레이션 정본 템플릿.
+  복사 후 [개념] 부분과 draw()/컨트롤의 물리 로직만 교체하면 된다.
+  규칙: 단일 HTML · 외부 라이브러리 없음 · 좌상단 버튼 2개 · 이론 팝업 · 정보박스는 버튼 안 가림.
+-->
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>[개념] 시뮬레이션</title>
+<style>
+  @font-face{font-family:'Pretendard';font-weight:400;font-style:normal;font-display:swap;src:url('../fonts/Pretendard-Regular.otf') format('opentype');}
+  @font-face{font-family:'Pretendard';font-weight:500;font-style:normal;font-display:swap;src:url('../fonts/Pretendard-Medium.otf') format('opentype');}
+  :root{ --panel:rgba(18,22,38,0.82); --text:#e6ecff; --text-dim:#9fb0d8; --border:rgba(150,170,220,0.30); --accent:#7aa2ff; }
+  *{ box-sizing:border-box; } html, body{ margin:0; height:100%; }
+  body{ background:#0a1018; color:var(--text); font-family:'Pretendard',-apple-system,"Segoe UI","Malgun Gothic",system-ui,sans-serif; overflow:hidden; }
+  #cv{ display:block; position:absolute; inset:0; width:100%; height:100%; background:#0a1018; touch-action:none; }
+  .panel{ position:absolute; left:50%; bottom:18px; transform:translateX(-50%); display:flex; flex-wrap:wrap; align-items:center; gap:10px 16px; background:var(--panel); border:0.5px solid var(--border); border-radius:14px; padding:12px 16px; backdrop-filter:blur(8px); max-width:min(94vw,920px); }
+  button{ height:36px; padding:0 12px; border-radius:8px; background:rgba(40,48,74,0.6); color:var(--text); border:0.5px solid var(--border); font-size:14px; cursor:pointer; }
+  button:hover{ background:rgba(60,70,104,0.7); }
+  .field{ display:flex; align-items:center; gap:8px; } .field label{ font-size:14px; color:var(--text-dim); white-space:nowrap; }
+  input[type=range]{ width:150px; accent-color:var(--accent); } .field span{ font-size:14px; font-weight:500; min-width:34px; text-align:right; }
+  html, body{ overscroll-behavior:none; -webkit-text-size-adjust:100%; }
+  @media (pointer:coarse){ button{ height:42px; } input[type=range]{ height:6px; } #backHub, #theoryBtn{ height:40px !important; } }
+</style>
+</head>
+<body>
+<!-- 좌상단 고정 버튼 2개 — z-index:9999. 정보 박스가 이 영역을 가리면 안 된다. -->
+<a href="../index.html" id="backHub" onmouseover="this.style.background='rgba(40,52,80,0.92)'" onmouseout="this.style.background='rgba(10,16,28,0.80)'" style="position:fixed; top:14px; left:14px; z-index:9999; display:inline-flex; align-items:center; gap:6px; height:34px; padding:0 14px; border-radius:9px; background:rgba(10,16,28,0.80); color:#cdd9ff; border:1px solid rgba(150,170,220,0.40); font:500 14px 'Pretendard',-apple-system,'Segoe UI','Malgun Gothic',system-ui,sans-serif; text-decoration:none; -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px);">← 허브로</a>
+<button id="theoryBtn" onclick="document.getElementById('theoryModal').style.display='flex'" onmouseover="this.style.background='rgba(74,60,28,0.95)'" onmouseout="this.style.background='rgba(48,40,20,0.85)'" style="position:fixed; top:14px; left:126px; z-index:9999; height:34px; padding:0 14px; border-radius:9px; background:rgba(48,40,20,0.85); color:#ffe0a3; border:1px solid rgba(239,159,39,0.55); font:500 14px 'Pretendard',-apple-system,'Segoe UI','Malgun Gothic',system-ui,sans-serif; cursor:pointer; -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px);">📖 이론 배우기</button>
+
+  <canvas id="cv"></canvas>
+
+  <!-- 하단 중앙 컨트롤 패널 -->
+  <div class="panel">
+    <button id="run">⏸ 정지</button>
+    <button id="reset">↻ 다시</button>
+    <div class="field"><label>파라미터</label><input type="range" id="pa" min="1" max="10" value="5" step="1" /><span id="paout">5</span></div>
+  </div>
+
+<script>
+(function(){
+  var canvas=document.getElementById('cv'), ctx=canvas.getContext('2d');
+  var W=0,H=0,dpr=Math.min(window.devicePixelRatio||1,2);
+  function resize(){ W=window.innerWidth; H=window.innerHeight; canvas.width=Math.round(W*dpr); canvas.height=Math.round(H*dpr); ctx.setTransform(dpr,0,0,dpr,0,0); }
+  function rrect(x,y,w,h,r){ ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r); ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
+
+  // ── 상태 (개념에 맞게 교체) ──────────────────────────
+  var param=5, running=true;
+  function reset(){ /* 초기 상태로 */ }
+
+  function draw(){
+    ctx.fillStyle='#0a1018'; ctx.fillRect(0,0,W,H);
+
+    // ── 물리/시각화 로직 (개념에 맞게 교체) ──────────────
+    // if(running){ ... 상태 적분 ... }
+    // ... 그림·그래프·벡터 ...
+
+    // ── 상단 중앙 정보 박스 (py=58 — 좌상단 버튼을 피한다) ──
+    var pw=Math.min(580,W-32), px=(W-pw)/2, py=58, ph=44;
+    ctx.fillStyle='rgba(16,22,38,0.92)'; ctx.strokeStyle='#33405f'; ctx.lineWidth=1; rrect(px,py,pw,ph,12); ctx.fill(); ctx.stroke();
+    ctx.textAlign='center'; ctx.font='600 15px Pretendard, sans-serif'; ctx.fillStyle='#bcc7e4';
+    ctx.fillText('여기에 현재 상태를 쉬운 말로 보여준다', W/2, py+27);
+    ctx.textAlign='left';
+
+    requestAnimationFrame(draw);
+  }
+
+  document.getElementById('run').addEventListener('click', function(){ running=!running; this.textContent=running?'⏸ 정지':'▶ 시작'; });
+  document.getElementById('reset').addEventListener('click', reset);
+  document.getElementById('pa').addEventListener('input', function(){ param=+this.value; document.getElementById('paout').textContent=param; });
+  window.addEventListener('resize', resize); resize(); draw();
+})();
+</script>
+
+<!-- ── 이론 배우기 팝업 ───────────────────────────────────────── -->
+<div id="theoryModal" onclick="if(event.target===this)this.style.display='none'" style="display:none; position:fixed; inset:0; z-index:10000; background:rgba(4,8,16,0.74); align-items:center; justify-content:center; padding:18px; -webkit-backdrop-filter:blur(3px); backdrop-filter:blur(3px);">
+  <div style="background:#121726; border:1px solid rgba(150,170,220,0.25); border-radius:18px; max-width:600px; width:100%; max-height:88vh; overflow-y:auto; padding:24px 26px 28px; box-shadow:0 24px 70px rgba(0,0,0,0.55); font-family:'Pretendard',-apple-system,'Segoe UI','Malgun Gothic',system-ui,sans-serif; color:#dbe4f7; line-height:1.7;">
+    <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:4px;">
+      <h2 style="margin:0; font-size:24px; color:#fff;">[이모지] [개념]</h2>
+      <button onclick="document.getElementById('theoryModal').style.display='none'" style="height:32px; width:32px; border-radius:8px; background:rgba(60,70,100,0.5); color:#cdd9ff; border:1px solid rgba(150,170,220,0.3); font-size:20px; cursor:pointer; line-height:1;">&times;</button>
+    </div>
+    <h3 style="font-size:18px; color:#ffd479; margin:18px 0 8px;">📚 이론 — 쉽게 이해하기</h3>
+    <p style="margin:0 0 12px;">초등학생도 이해할 수 있게, 일상 비유로 핵심 원리를 설명한다.</p>
+    <div style="background:rgba(93,202,165,0.12); border:1px solid rgba(93,202,165,0.4); border-radius:12px; padding:12px 14px; margin:0 0 12px;">
+      💡 <b style="color:#7fd9b8;">핵심</b> — 한 문장으로 기억할 포인트.
+    </div>
+    <h3 style="font-size:18px; color:#7fd9b8; margin:22px 0 8px;">🎮 사용 방법</h3>
+    <ul style="margin:0; padding-left:20px;">
+      <li style="margin-bottom:7px;"><b style="color:#fff;">버튼·슬라이더</b>를 어떻게 조작하면 무엇이 보이는지.</li>
+      <li><b style="color:#fff;">↻ 다시</b> — 처음으로 되돌린다.</li>
+    </ul>
+  </div>
+</div>
+<script>document.addEventListener('keydown',function(e){ if(e.key==='Escape') document.getElementById('theoryModal').style.display='none'; });</script>
+</body>
+</html>
